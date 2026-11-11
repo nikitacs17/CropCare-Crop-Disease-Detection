@@ -1,0 +1,8 @@
+# CropCare - Crop Disease Detection & Reporting System
+# Core Web & Machine Learning Dependencies
+
+Flask>=3.0.0
+Werkzeug>=3.0.0
+Pillow>=10.0.0
+numpy>=1.26.0
+onnxruntime>=1.18.0

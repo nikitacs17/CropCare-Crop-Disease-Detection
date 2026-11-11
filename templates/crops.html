@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Crop Information Center - CropCare{% endblock %}
+
+{% block content %}
+<!-- Information Center Hero Section -->
+<section class="hero">
+    <h1>🌾 Crop Information Center</h1>
+    <p>Comprehensive agronomic profiles, optimal growing conditions, common pathology, and clinically verified disease management protocols for major crops.</p>
+</section>
+
+<!-- Crop Selection Tabs -->
+<div class="crop-nav-wrapper">
+    <div class="crop-nav-tabs">
+        <a href="{{ url_for('crops') }}" 
+           class="crop-tab {% if not active_crop_id %}active{% endif %}">
+            <span class="tab-icon">📚</span>
+            <span>All Crops</span>
+        </a>
+        {% for crop in crop_list %}
+        <a href="{{ url_for('crops', crop=crop.id) }}" 
+           class="crop-tab {% if active_crop_id == crop.id %}active{% endif %}">
+            <span class="tab-icon">{{ crop.icon }}</span>
+            <span>{{ crop.name }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Crops List or Selected Crop Detail -->
+<div class="crops-container">
+    {% set display_crops = [selected_crop] if selected_crop else crop_list %}
+
+    {% for crop in display_crops %}
+    <article class="crop-card card" id="crop-{{ crop.id }}">
+        <!-- Header Banner -->
+        <div class="crop-header">
+            <div class="crop-title-group">
+                <span class="crop-badge-icon">{{ crop.icon }}</span>
+                <div>
+                    <h2 class="crop-name">{{ crop.name }}</h2>
+                    <p class="crop-scientific">
+                        <em>{{ crop.scientific_name }}</em> &bull; 
+                        <span class="crop-family">{{ crop.family }}</span>
+                    </p>
+                </div>
+            </div>
+            <div class="crop-tags">
+                <span class="badge badge-category">{{ crop.category }}</span>
+            </div>
+        </div>
+
+        <p class="crop-tagline">{{ crop.tagline }}</p>
+        <p class="crop-overview">{{ crop.overview }}</p>
+
+        <!-- Growing Conditions Grid -->
+        <div class="crop-section">
+            <h3 class="crop-section-heading">
+                <span class="heading-icon">🌱</span> Optimal Growing Conditions
+            </h3>
+            <div class="conditions-grid">
+                <div class="condition-item">
+                    <div class="condition-header">
+                        <span class="cond-icon">🪴</span>
+                        <strong>Soil & pH</strong>
+                    </div>
+                    <p>{{ crop.growing_conditions.soil }}</p>
+                </div>
+
+                <div class="condition-item">
+                    <div class="condition-header">
+                        <span class="cond-icon">🌡️</span>
+                        <strong>Temperature & Climate</strong>
+                    </div>
+                    <p>{{ crop.growing_conditions.temperature }}</p>
+                </div>
+
+                <div class="condition-item">
+                    <div class="condition-header">
+                        <span class="cond-icon">💧</span>
+                        <strong>Water & Rainfall</strong>
+                    </div>
+                    <p>{{ crop.growing_conditions.rainfall }}</p>
+                </div>
+
+                <div class="condition-item">
+                    <div class="condition-header">
+                        <span class="cond-icon">☀️</span>
+                        <strong>Sunlight & Radiation</strong>
+                    </div>
+                    <p>{{ crop.growing_conditions.sunlight }}</p>
+                </div>
+
+                <div class="condition-item">
+                    <div class="condition-header">
+                        <span class="cond-icon">📅</span>
+                        <strong>Sowing & Harvest</strong>
+                    </div>
+                    <p>{{ crop.growing_conditions.sowing_harvest }}</p>
+                </div>
+
+                <div class="condition-item">
+                    <div class="condition-header">
+                        <span class="cond-icon">📏</span>
+                        <strong>Field Spacing</strong>
+                    </div>
+                    <p>{{ crop.growing_conditions.spacing }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agronomic Best Practices -->
+        {% if crop.agronomic_tips %}
+        <div class="crop-section">
+            <h3 class="crop-section-heading">
+                <span class="heading-icon">💡</span> Agronomic Best Practices
+            </h3>
+            <ul class="agronomic-tips-list">
+                {% for tip in crop.agronomic_tips %}
+                <li>
+                    <span class="tip-check">✓</span>
+                    <span>{{ tip }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Common Diseases & Management -->
+        <div class="crop-section">
+            <h3 class="crop-section-heading">
+                <span class="heading-icon">🩺</span> Common Diseases & Clinical Management
+            </h3>
+            <div class="diseases-grid">
+                {% for disease in crop.diseases %}
+                <div class="disease-card">
+                    <div class="disease-card-header">
+                        <div>
+                            <h4 class="disease-name">{{ disease.name }}</h4>
+                            <p class="disease-pathogen"><em>{{ disease.pathogen }}</em></p>
+                        </div>
+                        <span class="badge {% if 'High' in disease.severity %}badge-disease{% else %}badge-warning{% endif %}">
+                            {{ disease.severity }} Risk
+                        </span>
+                    </div>
+
+                    <!-- Symptoms -->
+                    <div class="disease-block symptoms-block">
+                        <div class="block-label">
+                            <span class="block-icon">🔍</span>
+                            <strong>Key Symptoms & Identification:</strong>
+                        </div>
+                        <p class="block-text">{{ disease.symptoms }}</p>
+                    </div>
+
+                    <!-- Prevention -->
+                    <div class="disease-block prevention-block">
+                        <div class="block-label">
+                            <span class="block-icon">🛡️</span>
+                            <strong>Preventive Measures:</strong>
+                        </div>
+                        <p class="block-text">{{ disease.prevention }}</p>
+                    </div>
+
+                    <!-- Treatment & Chemical Management -->
+                    <div class="disease-block treatment-block">
+                        <div class="block-label">
+                            <span class="block-icon">💊</span>
+                            <strong>Treatment & Control Management:</strong>
+                        </div>
+                        <p class="block-text">{{ disease.treatment }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- CTA footer for leaf diagnosis -->
+        <div class="crop-card-footer">
+            <p class="cta-note">Observing these symptoms in your field?</p>
+            <a href="{{ url_for('home') }}" class="btn btn-primary">
+                <span>📸 Upload Leaf for Instant AI Diagnosis</span>
+            </a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% endblock %}

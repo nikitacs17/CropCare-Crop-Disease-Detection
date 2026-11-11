@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}CropCare - Detection History & Reports{% endblock %}
+
+{% block content %}
+<div class="history-header">
+    <div>
+        <h2>📋 Crop Health Detection History</h2>
+        <p class="text-muted">Review previous leaf analyses, revisit diagnostic findings, and print reports.</p>
+    </div>
+    <div>
+        <a href="{{ url_for('home') }}" class="btn btn-primary">+ New Diagnosis</a>
+    </div>
+</div>
+
+{% if reports and reports|length > 0 %}
+    <!-- Summary Counter Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-num">{{ reports|length }}</span>
+            <span class="stat-label">Total Leaf Scans</span>
+        </div>
+        <div class="stat-card stat-healthy">
+            <span class="stat-num">{{ reports|selectattr('is_healthy', 'equalto', 1)|list|length }}</span>
+            <span class="stat-label">Healthy Leaves</span>
+        </div>
+        <div class="stat-card stat-diseased">
+            <span class="stat-num">{{ reports|selectattr('is_healthy', 'equalto', 0)|list|length }}</span>
+            <span class="stat-label">Diseases Diagnosed</span>
+        </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="card history-card">
+        <div class="table-responsive">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Sample Image</th>
+                        <th>Crop</th>
+                        <th>Condition / Diagnosis</th>
+                        <th>Confidence</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reports %}
+                    <tr>
+                        <td class="history-date">
+                            <span class="date-main">{{ r.created_at.split(' ')[0] }}</span>
+                            <span class="date-time">{{ r.created_at.split(' ')[1] }}</span>
+                            <small class="report-badge"><code>{{ r.report_id }}</code></small>
+                        </td>
+                        <td>
+                            <img src="{{ url_for('static', filename='uploads/' + r.image_filename) }}" alt="Leaf sample" class="history-thumb">
+                        </td>
+                        <td class="font-semibold">{{ r.crop_name }}</td>
+                        <td>
+                            {% if r.is_healthy %}
+                                <span class="badge badge-healthy">🌿 Healthy</span>
+                            {% elif r.status == 'pending_model' %}
+                                <span class="badge badge-pending">⚙️ Model Pending</span>
+                            {% elif r.status == 'unreliable' %}
+                                <span class="badge badge-warning">⚠️ Low Confidence</span>
+                            {% else %}
+                                <span class="badge badge-disease">🔴 {{ r.disease_name }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="conf-pill">{{ r.confidence }}%</span>
+                        </td>
+                        <td class="table-actions">
+                            <a href="{{ url_for('view_result', report_id=r.report_id) }}" class="btn-action btn-view" title="View Result">
+                                👁️ View
+                            </a>
+                            <a href="{{ url_for('view_report', report_id=r.report_id) }}" class="btn-action btn-print" target="_blank" title="Print Report">
+                                🖨️ Print
+                            </a>
+                            <form action="{{ url_for('delete_report_route', report_id=r.report_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete report {{ r.report_id }}?');">
+                                <button type="submit" class="btn-action btn-del" title="Delete">
+                                    🗑️
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <!-- Empty State -->
+    <div class="card empty-state">
+        <div class="empty-icon">🌱</div>
+        <h3>No Leaf Diagnostic Reports Found</h3>
+        <p class="text-muted">You haven't scanned any crop leaves yet. Upload your first crop leaf photo to generate an automated health report.</p>
+        <a href="{{ url_for('home') }}" class="btn btn-primary" style="margin-top: 1rem;">Upload Crop Leaf Now</a>
+    </div>
+{% endif %}
+{% endblock %}

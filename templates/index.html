@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}CropCare - Leaf Disease Detection{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Crop Leaf Health Diagnostic</h1>
+    <p>Upload a clear photo of an affected plant leaf. Our AI will analyze the leaf pattern, identify diseases, and recommend preventive treatments.</p>
+</section>
+
+<div class="card">
+    <form id="uploadForm" action="{{ url_for('home') }}" method="POST" enctype="multipart/form-data">
+        <!-- Drag & Drop Zone -->
+        <div class="upload-zone" id="dropZone">
+            <div class="upload-icon">🌿</div>
+            <div class="upload-prompt">Drag & Drop Crop Leaf Photo Here</div>
+            <div class="upload-subtext">or click anywhere to browse from your device</div>
+            <label class="btn-browse" for="leafImageInput">Choose Leaf Image</label>
+            <input type="file" id="leafImageInput" name="file" class="file-input" accept=".jpg,.jpeg,.png,.webp" required>
+        </div>
+
+        <!-- Live Image Preview Card -->
+        <div class="preview-container" id="previewContainer">
+            <div class="preview-card">
+                <img id="previewImage" class="preview-image" src="" alt="Selected leaf preview">
+                <div class="preview-details">
+                    <div id="previewName" class="preview-name">leaf_sample.jpg</div>
+                    <div id="previewSize" class="preview-meta">Size: --</div>
+                    <span class="badge-valid">✓ Ready for Disease Analysis</span>
+                </div>
+                <button type="button" id="btnRemove" class="btn-remove">✕ Remove</button>
+            </div>
+        </div>
+
+        <!-- Action / Submit -->
+        <div class="action-area">
+            <button type="submit" id="btnSubmit" class="btn-submit" disabled>
+                <span id="btnSpinner" class="spinner"></span>
+                <span id="btnText">Detect Crop Disease</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Tips for Farmers -->
+<section class="tips-grid">
+    <div class="tip-card">
+        <h3>📸 High Quality Leaf</h3>
+        <p>Ensure the leaf is well-lit and in focus. Avoid blurry or shadowy photos for accurate diagnosis.</p>
+    </div>
+    <div class="tip-card">
+        <h3>🔍 Focus on Symptoms</h3>
+        <p>Capture visible spots, discoloration, or lesions prominently in the center of the frame.</p>
+    </div>
+    <div class="tip-card">
+        <h3>📁 Supported Formats</h3>
+        <p>Upload common formats: JPG, JPEG, PNG, or WEBP. Maximum file size allowed is 10 MB.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

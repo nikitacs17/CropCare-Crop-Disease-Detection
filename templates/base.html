@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CropCare - Crop Disease Detection & Reporting{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <a href="{{ url_for('home') }}" class="nav-brand">
+            <span class="brand-icon">🌱</span>
+            <span>CropCare</span>
+            <span class="nav-tagline">Disease Detection & Reporting</span>
+        </a>
+        <nav class="nav-links">
+            <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+            <a href="{{ url_for('crops') }}" class="nav-link {% if request.endpoint == 'crops' %}active{% endif %}">Crop Information</a>
+            <a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint == 'history' %}active{% endif %}">History</a>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="container">
+        <!-- Flash messages from server -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'error' else 'danger' }}">
+                        <span>{{ '⚠️' if category in ['error', 'danger'] else 'ℹ️' }}</span>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Client-side error alert banner -->
+        <div id="clientAlert" class="alert alert-danger" style="display: none;"></div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p><strong>CropCare</strong> &mdash; Crop Disease Detection and Reporting System &bull; College Project</p>
+        <p style="margin-top: 0.3rem; font-size: 0.8rem; color: #7a9485;">
+            Developed for farmer assistance. Predictions are an aid and do not replace professional agronomist advice.
+        </p>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
